@@ -11,7 +11,7 @@
             [0, 0, 0, 0, 0, 0, 0],
     ]
     var bonusCella  
-    var socket = io.connect('https://maze-car.herokuapp.com/');
+    var socket = io.connect('https://carmaze.onrender.com');
         function backButton() {
             socket.emit("disconnectedPlayer",socket.id)
             document.getElementById("backImage").style.display= "none"
