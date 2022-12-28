@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="static/index.css" />
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"
+        integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k"
+        crossorigin="anonymous"></script>
+    <script src="static/gestClientSocket.js"></script>
+    <script src="static/main.js"></script>
+    <script src="static/CellaClass.js"></script>
+    <script src="static/cookie.js"></script>
+    <link rel="icon" type="image/x-icon" href="static/img/favicon.ico">
+    <script>
+    </script>
+    <title>Labirinto magico</title>
+</head>
+
+<body onload="setFocus(),checkCookie()" style="background-color:#D5DBDB;" onkeydown="enterMessage(event)">
+    <h1 style="text-align:center;font-size: 50px;color:#ED1C1C;margin-right: 140px;margin-top: -10px;">Labirinto magico
+    </h1>
+    <div id="logindocument" style="display:block">
+        <div id="document">
+            <div id="gameform" style="float:left">
+                <p style="color:#3498DB;text-align: center;"><b>Benvenuto in Labirinto Magico!</b></p>
+                <p>Puoi decidere di creare una stanza o di entrare in una già creata</p>
+                <p style="text-align:center" id="nickMessage">Inserisci il nickname per iniziare a giocare</p>
+                <div style="display:flex;justify-content:center;">
+                    <input type="text" id="nickname" onkeydown="enterCheck(event)" class="input"><button type="button"
+                        class="input" style="cursor:pointer" id="confirmOk" onclick="sendNickname()">OK</button>
+                </div>
+                <br>
+                <div class="containerButton" style="display:none">
+                    <button class="gameButton" id="startGame" onclick="createGame()">Crea partita</button>
+                    <button class="gameButton" id="searchGame" onclick="joinGame()">Partecipa a una stanza</button>
+                    <button class="gameButton" id="randomGame" onclick="checkGame()">Partecipa a una partita
+                        casuale</button><br>
+                    <button id="backImage" style="display:none"><img src="static/img/backimage.png" alt="backImage"
+                            width="40" height="40" onclick="backButton()"></button>
+                </div>
+                <div id="createForm" style="display:none">
+                    <p>Codice della stanza: <span id="roomCode" style="cursor:pointer" onclick="copyCode(this)"></span>
+                        <span style="font-style:italic">(Premi per copiare!)</span></p>
+                    <p id="playersFound">Giocatori trovati: </p>
+                    <p id="yourNick"></p>
+                    <p style="color:red;display:none;" id="nickDiv"><span id="nick">Name</span> ha abbandonato la
+                        stanza!</p>
+                </div>
+                <form id="joinForm" style="display:none" action="javascript:void(0);">
+                    <p id="roomCode">Codice della stanza: (6 caratteri)</p>
+                    <input type="text" maxlength="6" minlength="6" id="codInput" class="input"
+                        onkeydown="searchGameEvent(event)" required> <button type="submit" style="cursor:pointer"
+                        onclick="joinRoom()" id="searchRoom">Cerca partita</button>
+                </form>
+                <p id="message" style="display:none;text-align: center;color:red">Nessuna partita trovata!</p>
+            </div>
+        </div>
+    </div>
+    <div id="gamedocument" style="display:none">
+        <div id="infoMessageDiv">
+            <p id="infoMessageText"></p>
+        </div>
+        <div id="all">
+            <div style="width: 270px;">
+                <table>
+                    <tr>
+                        <th>Giocatori:</th>
+                        <th>Punteggio:</th>
+                        <th>Colore</th>
+                    </tr>
+                    <tr>
+                        <td class="playertd"></td>
+                        <td id="color0" class="pointstd">0</td>
+                        <td id="blue"></td>
+                    </tr>
+                    <tr>
+                        <td class="playertd"></td>
+                        <td id="color1" class="pointstd">0</td>
+                        <td id="red"></td>
+                    </tr>
+                    <tr>
+                        <td class="playertd"></td>
+                        <td id="color2" class="pointstd">0</td>
+                        <td id="green"></td>
+                    </tr>
+                    <tr>
+                        <td class="playertd"></td>
+                        <td id="color3" class="pointstd">0</td>
+                        <td id="yellow"></td>
+                    </tr>
+                </table>
+                <h2>Chat di gioco</h2>
+                <div id="chatForm">
+                    <div id="messageForm">
+
+                    </div>
+                    <div id="sendForm">
+                        <input type="text" id="inputMessage" onkeydown="" maxlength="50">
+                        <button onclick="sendMessage()" id="buttonMessage">Invia</button>
+                    </div>
+                </div>
+            </div>
+            <div id="campo">
+                <div class="bonusCella" onclick="checkRotateCella()" id="49"></div>
+            </div>
+            <div id="secretItems">
+                <h1 style="text-align: center; color: #2196f3">
+                    <b>Carte da trovare</b>
+                </h1>
+                <div class="row-items">
+                    <div class="items"></div>
+                    <div class="items"></div>
+                    <div class="items"></div>
+                    <div class="items"></div>
+                    <div class="items"></div>
+                    <div class="items"></div>
+                </div>
+                <h3 style="text-align:center;color:green;display:none" id="returnBaseMSG">Torna alla tua base per
+                    vincere!</h3>
+            </div>
+        </div>
+        <div id="skipDiv" style="display:flex;justify-content:center">
+            <button type="button" id="skipButton" onclick="skipTurn()">Finisci il turno</button>
+        </div>
+    </div>
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <p id="winnerMessage"></p>
+        </div>
+
+    </div>
+</body>
+
+</html>
